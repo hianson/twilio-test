@@ -28,8 +28,9 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('sendText', function(data) {
     var url = `https://dog.ceo/api/breed/${data.breed}/images/random`
+    var recipient = data.recipient
 
-    getDogImage(url)
+    getDogImage(url, recipient)
   })
   socket.on('disconnect', function() {
     console.log('Connection ended.')
@@ -37,23 +38,23 @@ io.sockets.on('connection', function(socket) {
 
 });
 
-function getDogImage(url) {
+function getDogImage(url, recipient) {
   axios.get(url)
     .then(function (response) {
-      console.log(response.data.message)
-      sendText(response.data.message)
+      sendText(response.data.message, recipient)
     })
     .catch(function (error) {
       console.log(error);
   });
 }
 
-function sendText(data) {
+function sendText(imgUrl, recipient) {
+  console.log(recipient)
   client.messages
     .create({
-      to: '+' + testRecipient,
+      to: '+' + recipient,
       from: '+' + testSender,
-      mediaUrl: data,
+      mediaUrl: imgUrl,
     })
     .then(message => console.log(message.sid));
 }
