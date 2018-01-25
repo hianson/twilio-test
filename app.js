@@ -1,11 +1,11 @@
-const client = require('twilio')(accountSid, authToken);
-var axios = require('axios')
-
 // Twilio Credentials
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const testRecipient = process.env.TEST_RECEIVER
 const testSender = process.env.TEST_SENDER
+
+const client = require('twilio')(accountSid, authToken);
+var axios = require('axios')
 
 // Server
 var express = require('express');
@@ -28,31 +28,48 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('sendText', function(data) {
     var url = `https://dog.ceo/api/breed/${data.breed}/images/random`
+    var recipient = data.recipient
 
-    getDogImage(url)
+    if (validatePhoneNumber(recipient) === true) {
+      getDogImage(url, recipient)
+    } else {
+      socket.emit('invalidRecipient');
+      return
+    }
+    socket.emit('textSent');
   })
   socket.on('disconnect', function() {
     console.log('Connection ended.')
   })
-
 });
 
-function getDogImage(url) {
+function validatePhoneNumber(recipient) {
+  var phoneNo = /^\d{10}$/;
+
+  if (recipient.match(phoneNo)) {
+    return true
+  } else {
+    return false
+  }
+}
+
+function getDogImage(url, recipient) {
   axios.get(url)
     .then(function (response) {
-      sendText(response.data.message)
+      sendText(response.data.message, recipient)
     })
     .catch(function (error) {
       console.log(error);
   });
 }
 
-function sendText(data) {
+function sendText(imgUrl, recipient) {
+  console.log(recipient)
   client.messages
     .create({
-      to: '+' + testRecipient,
+      to: '+1' + recipient,
       from: '+' + testSender,
-      body: data,
+      mediaUrl: imgUrl,
     })
     .then(message => console.log(message.sid));
 }
