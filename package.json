@@ -18,6 +18,7 @@
   "homepage": "https://github.com/hianson/twilio-test#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "twilio": "^3.11.1"
   }
 }
