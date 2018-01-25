@@ -3,6 +3,9 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const testRecipient = process.env.TEST_RECEIVER
 const testSender = process.env.TEST_SENDER
+// require the Twilio module and create a REST client
+const client = require('twilio')(accountSid, authToken);
+
 
 // Server
 var express = require('express');
@@ -24,12 +27,7 @@ io.sockets.on('connection', function(socket) {
   console.log('Connection from socket id:', socket.id)
 
   socket.on('sendText', function(data) {
-
-
-
-    // require the Twilio module and create a REST client
-    const client = require('twilio')(accountSid, authToken);
-
+    if (data.recipient.length === 11) {
     client.messages
       .create({
         to: '+' + testRecipient,
@@ -37,6 +35,9 @@ io.sockets.on('connection', function(socket) {
         body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
       })
       .then(message => console.log(message.sid));
+    }
+
+
 
 
 
