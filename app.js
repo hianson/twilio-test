@@ -1,11 +1,11 @@
-const client = require('twilio')(accountSid, authToken);
-var axios = require('axios')
-
 // Twilio Credentials
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const testRecipient = process.env.TEST_RECEIVER
 const testSender = process.env.TEST_SENDER
+
+const client = require('twilio')(accountSid, authToken);
+var axios = require('axios')
 
 // Server
 var express = require('express');
@@ -40,6 +40,7 @@ io.sockets.on('connection', function(socket) {
 function getDogImage(url) {
   axios.get(url)
     .then(function (response) {
+      console.log(response.data.message)
       sendText(response.data.message)
     })
     .catch(function (error) {
@@ -52,7 +53,7 @@ function sendText(data) {
     .create({
       to: '+' + testRecipient,
       from: '+' + testSender,
-      body: data,
+      mediaUrl: data,
     })
     .then(message => console.log(message.sid));
 }
