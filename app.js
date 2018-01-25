@@ -33,9 +33,10 @@ io.sockets.on('connection', function(socket) {
     if (validatePhoneNumber(recipient) === true) {
       getDogImage(url, recipient)
     } else {
-      console.log('Invalid phone number format: ', recipient)
       socket.emit('invalidRecipient');
+      return
     }
+    socket.emit('textSent');
   })
   socket.on('disconnect', function() {
     console.log('Connection ended.')
