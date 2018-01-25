@@ -30,13 +30,27 @@ io.sockets.on('connection', function(socket) {
     var url = `https://dog.ceo/api/breed/${data.breed}/images/random`
     var recipient = data.recipient
 
-    getDogImage(url, recipient)
+    if (validatePhoneNumber(recipient) === true) {
+      getDogImage(url, recipient)
+    } else {
+      console.log('Invalid phone number format: ', recipient)
+      socket.emit('invalidRecipient');
+    }
   })
   socket.on('disconnect', function() {
     console.log('Connection ended.')
   })
-
 });
+
+function validatePhoneNumber(recipient) {
+  var phoneNo = /^\d{10}$/;
+
+  if (recipient.match(phoneNo)) {
+    return true
+  } else {
+    return false
+  }
+}
 
 function getDogImage(url, recipient) {
   axios.get(url)
@@ -52,7 +66,7 @@ function sendText(imgUrl, recipient) {
   console.log(recipient)
   client.messages
     .create({
-      to: '+' + recipient,
+      to: '+1' + recipient,
       from: '+' + testSender,
       mediaUrl: imgUrl,
     })

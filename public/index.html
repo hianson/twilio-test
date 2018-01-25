@@ -8,7 +8,7 @@
   <body>
     <form onsubmit="sendText()">
       <label>Phone:</label>
-      <input type="text" name="phone">
+      <input type="text" name="phone" maxlength="10" size="10">
 
       <select name="breeds">
         <option value="affenpinscher">affenpinscher</option>
@@ -166,6 +166,10 @@
 
         socket.emit('sendText', {recipient: recipient, breed: breed});
       }
+
+      socket.on('invalidRecipient', function() {
+        alert('Phone number must be 10 digits including area code.')
+      })
 
 
     </script>
