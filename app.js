@@ -1,11 +1,11 @@
+const client = require('twilio')(accountSid, authToken);
+var axios = require('axios')
+
 // Twilio Credentials
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const testRecipient = process.env.TEST_RECEIVER
 const testSender = process.env.TEST_SENDER
-// require the Twilio module and create a REST client
-const client = require('twilio')(accountSid, authToken);
-
 
 // Server
 var express = require('express');
@@ -27,24 +27,32 @@ io.sockets.on('connection', function(socket) {
   console.log('Connection from socket id:', socket.id)
 
   socket.on('sendText', function(data) {
-    if (data.recipient.length === 11) {
-    client.messages
-      .create({
-        to: '+' + testRecipient,
-        from: '+' + testSender,
-        body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
-      })
-      .then(message => console.log(message.sid));
-    }
+    var url = `https://dog.ceo/api/breed/${data.breed}/images/random`
 
-
-
-
-
+    getDogImage(url)
   })
-
   socket.on('disconnect', function() {
     console.log('Connection ended.')
   })
 
 });
+
+function getDogImage(url) {
+  axios.get(url)
+    .then(function (response) {
+      sendText(response.data.message)
+    })
+    .catch(function (error) {
+      console.log(error);
+  });
+}
+
+function sendText(data) {
+  client.messages
+    .create({
+      to: '+' + testRecipient,
+      from: '+' + testSender,
+      body: data,
+    })
+    .then(message => console.log(message.sid));
+}

@@ -164,10 +164,7 @@
         var recipient = document.forms[0].phone.value
         var breed = document.forms[0].breeds.value
 
-        console.log(recipient)
-
         socket.emit('sendText', {recipient: recipient, breed: breed});
-        // alert("Text sent!")
       }
 
 
